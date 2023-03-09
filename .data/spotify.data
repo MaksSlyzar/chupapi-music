@@ -1,0 +1,11 @@
+{
+    "client_id": "f20d404c425247da8fea1543cb3878fa",
+    "client_secret": "cd28dac47c684e05966f2dc819ea1cd4",
+    "redirect_url": "http://127.0.0.1/index.html",
+    "access_token": "BQAHFIrDJ7cPbi2D3bsyeG3TLaKDsPKDjtPwpUujxagGPQC0mXNqFLrn6tpnOYZVDCNFXTMn2ahaSQjHqcfPx9q7FXikJZ2HmgRR9ZDDNQ_cMtvmnNRk_Gu1UfPhqlVJU68UGS8VBKDR0tSzhdSibvaR4BxWQWAxRlDa4FVgyM5g-PXjci0iTvpWb63_qyMvzXw",
+    "refresh_token": "AQAG-xfXwaafKYPEPYvqMUaziPfI3pNNB66qGuefoPcVDhcugASXk_VFY890OdTd7977wMA8xldmwQx2Onom-baDJG0XZ8OR4qf0N0V5mYAVMQp92zQukEsLTG0Cl2VEtTY",
+    "expires_in": 3600,
+    "expiry": 1677497801366,
+    "token_type": "Bearer",
+    "market": "ua"
+}
