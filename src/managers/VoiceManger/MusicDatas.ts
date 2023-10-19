@@ -1,5 +1,5 @@
 import { User } from "discord.js";
-import playdl from "play-dl";
+import playdl, { playlist_info } from "play-dl";
 
 import { SpotifyPlaylist } from "play-dl";
 import MusicDto from "../../dtos/MusicDto";
@@ -112,7 +112,7 @@ class MusicDatas {
                 return tracks;
             else
                 tracks.push(this.musicList[i]);
-        
+        // console.log(tracks);
         return tracks;
     }
 }

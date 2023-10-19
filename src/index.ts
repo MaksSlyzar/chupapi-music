@@ -1,6 +1,4 @@
-// console.log('dsad')
-
 import "./bot"
-import "./webServer"
+import "./webserver/webServer"
 
-console.log("d")
+console.log("Index linked!");

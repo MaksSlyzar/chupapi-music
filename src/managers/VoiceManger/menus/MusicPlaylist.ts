@@ -1,6 +1,11 @@
 import { EmbedBuilder, Message, TextChannel } from "discord.js";
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events } = require('discord.js');
 import VoiceManager from "../VoiceManager";
+import CheckerButton from "./Buttons/CheckerButton";
+import DescriptionButton from "./Buttons/DescriptionButton";
+
+
+import { pauseEmoji, checkerEmoji } from "../../../constants/emojies_music.json";
 
 class MusicPlaylist {
     manager: VoiceManager;
@@ -20,12 +25,13 @@ class MusicPlaylist {
         // console.log(this.manager.musicDatas.getDiapTracks(this.page * 10, this.page * 10 + 10));
         // return;
         const embed = new EmbedBuilder()
-                                        .setTitle("Turn!")
+                                        .setTitle("Turn")
                                         .setDescription(`${this.manager.musicDatas.getDiapTracks(this.page * 10, this.page * 10 + 10).map((track, index) => {
-                                            return `${index === this.manager.musicDatas.index? 
-                                                this.manager.state.play?"▶️":"⏸️"
-                                            : ""}" ${track.title}" added by **${track.includingUser.username}**\n`
-                                        }).join('\n')}`);
+                                            return `${index + this.page * 10 === this.manager.musicDatas.index? 
+                                                this.manager.paused?pauseEmoji:checkerEmoji
+                                            : ""}"  ${track.title}" added by **${track.includingUser.username}**\n`
+                                        }).join('\n')}`)
+                                        .setColor(0x0099FF);
 
 
         const row = new ActionRowBuilder();
@@ -33,15 +39,13 @@ class MusicPlaylist {
         const maxPages = Math.floor(this.manager.musicDatas.musicList.length / 10);
         // console.log(maxPages, "Max pages");
 
-        const components = [
-                new ButtonBuilder()
-                    .setCustomId('checker')
-                    .setLabel('Checker')
-                    .setStyle(ButtonStyle.Secondary),
-                new ButtonBuilder()
-                    .setCustomId('description')
-                    .setLabel('Description')
-                    .setStyle(ButtonStyle.Secondary),      
+        const buttons = [
+            new CheckerButton(this.manager),
+            new DescriptionButton(this.manager)
+        ]
+
+        const components = [  
+            
         ];
         
         
@@ -63,6 +67,7 @@ class MusicPlaylist {
                 .setLabel(`${this.page + 2}`)
                 .setStyle(ButtonStyle.Secondary))
             
+        components.push(...buttons.map(button => button.buildButton()));
         row.addComponents(components);
 
         // const filter = i => i.customId === 'primary' && i.user.id === '122157285790187530';
@@ -71,41 +76,13 @@ class MusicPlaylist {
         const collector = channel.createMessageComponentCollector({ });
         
         collector.on('collect', async i => {
-            if (i.customId == "checker") {
-                try {
-                    await i.update({ components: [], content: "---" })
-                } catch (error) {
-                    console.log("ERROR");
+            const selectedCustomId = i.customId;
+    
+            for (const chupapiButton of buttons) {
+                if (selectedCustomId == chupapiButton.customId) {
+                    chupapiButton.pressed(i, collector);
                 }
-                
-                await this.manager.chooseWindow("checker");
-
-                collector.removeAllListeners();
             }
-
-            if (i.customId == "next") {
-                try {
-                    await i.update({ content: `---`, embeds: [
-                        new EmbedBuilder().setDescription("wait...")
-                    ] });
-                } catch (error) {
-                    console.log("ERROR")
-                }
-
-                this.manager.skip();
-            }
-
-            if (i.customId == "description") {
-                try {
-                    await i.update({ components: [], content: "---" })
-                } catch (error) {
-                    console.log("ERROR");
-                }
-                
-                await this.manager.chooseWindow("description");
-                
-                collector.removeAllListeners();
-            } 
 
             if (i.customId.split("_")[0] == "prevPage") {
                 this.page -= 1;

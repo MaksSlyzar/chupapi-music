@@ -1,6 +1,12 @@
 import { EmbedBuilder } from "@discordjs/builders";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Message, TextChannel } from "discord.js";
 import VoiceManager from "../VoiceManager";
+import PauseButton from "./Buttons/PauseButton";
+import NextButton from "./Buttons/NextButton";
+import DescriptionButton from "./Buttons/DescriptionButton";
+import TurnButton from "./Buttons/TurnButton";
+import CheckerButton from "./Buttons/CheckerButton";
+import PreserveButton from "./Buttons/PreserveButton";
 
 
 function addSpacesToNumber(number: number): string {
@@ -50,83 +56,48 @@ class MusicDescription {
         const { title, description, likes, link, views } = track;
 
         const embed = new EmbedBuilder()
-                                        .setTitle(`${title}`)
-                                        .setDescription(`Link: ${link}
-                                                         Likes: **${addSpacesToNumber(likes)}**:thumbsup: 
-                                                         Views: **${addSpacesToNumber(views)}**:eyeglasses:
-                                                         Platform: **${track.platform}**
-                                                         BotListened: 
-                                                         Most included: 
-                                                         `)
-                                        .setAuthor({ name: track.includingUser.username, iconURL: track.includingUser.avatarURL() })
+            .setTitle(`${title}`)
+            .setDescription(`Link: ${link}
+                                Likes: **${addSpacesToNumber(likes)}**:thumbsup: 
+                                Views: **${addSpacesToNumber(views)}**:eyeglasses:
+                                Platform: **${track.platform}**
+                                BotListened: 
+                                Most included: 
+                                `)
+            .setColor(0x0099FF)
+            .setAuthor({ name: track.includingUser.username, iconURL: track.includingUser.avatarURL() })
 
-        
 
-        const row = new ActionRowBuilder() as any;
 
-        const components = [
-            new ButtonBuilder()
-                .setCustomId('checker')
-                .setLabel('Checker')
-                .setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder()
-                .setCustomId('turn')
-                .setLabel('Turn')
-                .setStyle(ButtonStyle.Secondary),
-        ];
-
-        row.addComponents(components);
-
-        const channel = this.message.channel as TextChannel;
-        const collector = channel.createMessageComponentCollector({ });
-        
-        collector.on('collect', async i => {
-            if (i.customId == "turn") {
-                this.manager.tabsRefreshing++;
-
-                try {
-                    await i.update({ content: `---.`, embeds: [
-                        new EmbedBuilder().setDescription("wait...")
-                    ] });
-                } catch (error) {
-                    console.log("ERROR")
+            const buttons = [
+                new PreserveButton(this.manager),
+                new PauseButton(this.manager),
+                new NextButton(this.manager),
+                new TurnButton(this.manager),
+                new CheckerButton(this.manager)
+            ];
+            
+            const row = new ActionRowBuilder<ButtonBuilder>()
+                .addComponents(                    
+                    ...buttons.map(button => button.buildButton())
+                );
+    
+    
+            // const filter = i => i.customId === 'primary' && i.user.id === '122157285790187530';
+            
+            const channel = this.message.channel as TextChannel;
+            const collector = channel.createMessageComponentCollector({ });
+            
+            collector.on('collect', async i => {
+                const selectedCustomId = i.customId;
+    
+                for (const chupapiButton of buttons) {
+                    if (selectedCustomId == chupapiButton.customId) {
+                        chupapiButton.pressed(i, collector);
+                    }
                 }
-
-
-                await this.manager.chooseWindow("playlist");
-                
-                collector.removeAllListeners();
-            }
-
-            if (i.customId == "next") {
-                try {
-                    await i.update({ content: `---`, embeds: [
-                        new EmbedBuilder().setDescription("wait...")
-                    ] });
-                } catch (error) {
-                    console.log("ERROR")
-                }
-
-                this.manager.skip();
-            }
-
-            if (i.customId == "checker") {
-                this.manager.tabsRefreshing++;
-                
-                try {
-                    await i.update({ content: `---`, embeds: [
-                        new EmbedBuilder().setDescription("wait...")
-                    ] });
-                } catch (error) {
-                    console.log("ERROR")
-                }
-
-                await this.manager.chooseWindow("checker");
-
-                collector.removeAllListeners();
-            }
-            // await i.update({ content: 'A button was clicked!', components: [] });
-        });
+                // await i.update({ content: 'A button was clicked!', components: [] });
+            });
         
         collector.on('end', collected => console.log(`Collected ${collected.size} items`));
             

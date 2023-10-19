@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npx typescript",
     "start": "node build/index.js",
-    "dev": "npx nodemon"
+    "dev": "npx nodemon",
+    "wait": "..."
   },
   "keywords": [],
   "author": "",
@@ -29,6 +30,7 @@
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
+    "@discordjs/rest": "^2.0.1",
     "typescript": "^5.2.2"
   }
 }

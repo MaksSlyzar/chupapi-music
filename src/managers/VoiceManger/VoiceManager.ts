@@ -29,6 +29,8 @@ class VoiceManager {
     state: {
         play: boolean,
     };
+    canPause: number = Date.now();
+    paused: boolean = false;
 
     startUsersInChannel: Array<string>;
 
@@ -102,6 +104,7 @@ class VoiceManager {
             });
 
             this.audioPlayer.on(AudioPlayerStatus.Playing, (state: AudioPlayerState) => {
+                this.paused = false;
                 this.hearStartTime = Date.now();
                 this.state.play = true;
                 this.startUsersInChannel = [];
@@ -152,6 +155,8 @@ class VoiceManager {
 
             this.audioPlayer.on(AudioPlayerStatus.Paused, () => {
                 console.log("Paused")
+                this.paused = true;
+                this.state.play = false;
             });
 
             this.audioPlayer.on(AudioPlayerStatus.Buffering, () => {
@@ -250,15 +255,32 @@ class VoiceManager {
     }
 
     async pause () {
+        if ((Date.now() - this.canPause) / 1000 > 2) {
+            this.canPause = Date.now();
+            try {
+                console.log("PAUSE")
+                this.audioPlayer.pause();
+            } catch {
 
+            }
+        }
     }
 
     async unpause () {
+        if ((Date.now() - this.canPause) / 1000 > 2) {
+            this.canPause = Date.now();
+            try {
+                console.log("UNPAUSE")
+                this.audioPlayer.unpause();
+                
+            } catch {
 
+            }
+        }
     }
 
     async next () {
-
+    
     }
 
     async skip () {

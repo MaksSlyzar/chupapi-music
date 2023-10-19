@@ -1,0 +1,14 @@
+
+    if (commandName == "тронилидом") {
+        channel.send({ embeds: [
+            new EmbedBuilder().setTitle(Math.floor(Math.random()*10) >= 5? "Трон": "Дом").setImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwDj4g0kB65YEJ4pjUIxe2AV3AzwBFc5cx7_xbt4CfTLrKz9I2l1mblvYQK6Yw_VsyKss&usqp=CAU")
+        ] });
+    }
+
+    if (commandName == "gay") {
+        channel.send({ embeds: [new EmbedBuilder().setImage("https://cdn.discordapp.com/attachments/590541937900257324/1084437913242189914/IMG_20230312_132735.jpg")] })
+    }
+
+    if (commandName == "pidar") {
+        channel.send({ embeds: [new EmbedBuilder().setImage("https://cdn.discordapp.com/attachments/590541937900257324/1088952021991833621/image.png")] })
+    }

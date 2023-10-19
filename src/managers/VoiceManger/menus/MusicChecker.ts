@@ -1,11 +1,16 @@
-import { Embed, EmbedBuilder, Message, TextChannel } from "discord.js";
+import { ActionRow,  ActionRowBuilder, Embed, EmbedBuilder, Message, TextChannel, ButtonBuilder, ButtonStyle, Events, ButtonInteraction } from "discord.js";
 import MusicDto from "../../../dtos/MusicDto";
 const wait = require('node:timers/promises').setTimeout;
 import VoiceManager from "../VoiceManager";
 
 import parseSeconds from "../../../modules/parseSeconds";
+import DescriptionButton from "./Buttons/DescriptionButton";
+import TurnButton from "./Buttons/TurnButton";
+import PauseButton from "./Buttons/PauseButton";
+import NextButton from "./Buttons/NextButton";
+import PreserveButton from "./Buttons/PreserveButton";
 
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events } = require('discord.js');
+import { likeEmoji, dislikeEmoji} from "../../../constants/emojies_music.json";
 
 class MusicChecker {
     message: Message;
@@ -14,13 +19,12 @@ class MusicChecker {
     constructor (voiceManager: VoiceManager, message: Message) {
         this.manager = voiceManager;
         this.message = message;
+
+        this.message.react(likeEmoji);
+        this.message.react(dislikeEmoji);
     }
 
     refresh (music: MusicDto) {
-        console.log("CHECKER")
-        // console.log(music.includingUser)
-        // return;
-
         if (!music) {
             const embed = new EmbedBuilder()
                                         .setTitle("Checker")
@@ -52,83 +56,33 @@ class MusicChecker {
                                         .setFooter({ text: `Included by ${music.includingUser.username}`,
                                                      iconURL: music.includingUser.avatarURL() });
 
-        const row = new ActionRowBuilder()
+
+        const buttons = [
+            new PreserveButton(this.manager),
+            new PauseButton(this.manager),
+            new NextButton(this.manager),
+            new DescriptionButton(this.manager),
+            new TurnButton(this.manager),
+        ];
+        
+        const row = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
-                new ButtonBuilder()
-                    .setCustomId("preserve")
-                    .setStyle(ButtonStyle.Secondary)
-                    .setEmoji("◀️"),
-                new ButtonBuilder()
-                    .setCustomId('pause')
-                    .setStyle(ButtonStyle.Secondary)
-                    .setEmoji('⏸️'),
-                new ButtonBuilder()
-                    .setCustomId('next')
-                    .setEmoji('▶️')
-                    .setStyle(ButtonStyle.Secondary),
-                new ButtonBuilder()
-                    .setCustomId('turn')
-                    .setLabel('Turn')
-                    .setStyle(ButtonStyle.Secondary),
-                new ButtonBuilder()
-                    .setCustomId('description')
-                    .setLabel('Description')
-                    .setStyle(ButtonStyle.Secondary),
+                ...buttons.map(button => button.buildButton())
             );
 
-        // const filter = i => i.customId === 'primary' && i.user.id === '122157285790187530';
 
+        // const filter = i => i.customId === 'primary' && i.user.id === '122157285790187530';
+        
         const channel = this.message.channel as TextChannel;
         const collector = channel.createMessageComponentCollector({ });
         
         collector.on('collect', async i => {
-            if (i.customId == "turn") {
-                this.manager.tabsRefreshing++;
+            const selectedCustomId = i.customId;
 
-                try {
-                    await i.update({ content: `---`, embeds: [
-                        new EmbedBuilder().setDescription("wait...")
-                    ] });
-                } catch (error) {
-                    console.log("ERROR")
+            for (const chupapiButton of buttons) {
+                if (selectedCustomId == chupapiButton.customId) {
+                    chupapiButton.pressed(i, collector);
                 }
-
-
-                await this.manager.chooseWindow("playlist");
-                
-                collector.removeAllListeners();
-            }
-
-            if (i.customId == "preserve") {
-
-            }
-
-            if (i.customId == "next") {
-                try {
-                    await i.update({ content: `---`, embeds: [
-                        new EmbedBuilder().setDescription("wait...")
-                    ] });
-                } catch (error) {
-                    console.log("ERROR")
-                }
-
-                this.manager.skip();
-            }
-
-            if (i.customId == "description") {
-                this.manager.tabsRefreshing++;
-                
-                try {
-                    await i.update({ content: `---`, embeds: [
-                        new EmbedBuilder().setDescription("wait...")
-                    ] });
-                } catch (error) {
-                    console.log("ERROR")
-                }
-
-                await this.manager.chooseWindow("description");
-
-                collector.removeAllListeners();
             }
             // await i.update({ content: 'A button was clicked!', components: [] });
         });
