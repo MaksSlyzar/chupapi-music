@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npx typescript",
-    "start": "node build/index.js",
+    "start": "concurrently \"npx tsc --watch\" \"nodemon -q build/index.js\"",
     "dev": "npx nodemon",
     "wait": "..."
   },

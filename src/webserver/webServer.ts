@@ -3,7 +3,7 @@ import axios from 'axios';
 
 
 const app: Express = express();
-const port = 4030;
+const port = process.env.PORT;
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
