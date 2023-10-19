@@ -38,6 +38,29 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var builders_1 = require("@discordjs/builders");
 var discord_js_1 = require("discord.js");
+function addSpacesToNumber(number) {
+    // Перетворюємо число в рядок
+    var numStr = number.toString();
+    // Розділяємо рядок на групи по три цифри з кінця
+    var parts = [];
+    var tempPart = "";
+    var count = 0;
+    for (var i = numStr.length - 1; i >= 0; i--) {
+        tempPart = numStr[i] + tempPart;
+        count++;
+        if (count === 3) {
+            parts.unshift(tempPart);
+            tempPart = "";
+            count = 0;
+        }
+    }
+    if (tempPart.length > 0) {
+        parts.unshift(tempPart);
+    }
+    // З'єднуємо групи з пробілами та повертаємо результат
+    var result = parts.join(" ");
+    return result;
+}
 var MusicDescription = /** @class */ (function () {
     function MusicDescription(manager, message) {
         this.manager = manager;
@@ -54,7 +77,7 @@ var MusicDescription = /** @class */ (function () {
                 title = track.title, description = track.description, likes = track.likes, link = track.link, views = track.views;
                 embed = new builders_1.EmbedBuilder()
                     .setTitle("".concat(title))
-                    .setDescription("Link: ".concat(link, "\n                                                         Likes: **").concat(likes, "**\n                                                         Views: **").concat(views, "**\n                                                         Platform: **").concat(track.platform, "**\n                                                         BotListened: \n                                                         Most included: \n                                                         "))
+                    .setDescription("Link: ".concat(link, "\n                                                         Likes: **").concat(addSpacesToNumber(likes), "**:thumbsup: \n                                                         Views: **").concat(addSpacesToNumber(views), "**:eyeglasses:\n                                                         Platform: **").concat(track.platform, "**\n                                                         BotListened: \n                                                         Most included: \n                                                         "))
                     .setAuthor({ name: track.includingUser.username, iconURL: track.includingUser.avatarURL() });
                 row = new discord_js_1.ActionRowBuilder();
                 components = [
@@ -71,7 +94,7 @@ var MusicDescription = /** @class */ (function () {
                 channel = this.message.channel;
                 collector = channel.createMessageComponentCollector({});
                 collector.on('collect', function (i) { return __awaiter(_this, void 0, void 0, function () {
-                    var error_1, error_2;
+                    var error_1, error_2, error_3;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
@@ -96,8 +119,7 @@ var MusicDescription = /** @class */ (function () {
                                 collector.removeAllListeners();
                                 _a.label = 6;
                             case 6:
-                                if (!(i.customId == "checker")) return [3 /*break*/, 12];
-                                this.manager.tabsRefreshing++;
+                                if (!(i.customId == "next")) return [3 /*break*/, 11];
                                 _a.label = 7;
                             case 7:
                                 _a.trys.push([7, 9, , 10]);
@@ -111,12 +133,31 @@ var MusicDescription = /** @class */ (function () {
                                 error_2 = _a.sent();
                                 console.log("ERROR");
                                 return [3 /*break*/, 10];
-                            case 10: return [4 /*yield*/, this.manager.chooseWindow("checker")];
+                            case 10:
+                                this.manager.skip();
+                                _a.label = 11;
                             case 11:
+                                if (!(i.customId == "checker")) return [3 /*break*/, 17];
+                                this.manager.tabsRefreshing++;
+                                _a.label = 12;
+                            case 12:
+                                _a.trys.push([12, 14, , 15]);
+                                return [4 /*yield*/, i.update({ content: "---", embeds: [
+                                            new builders_1.EmbedBuilder().setDescription("wait...")
+                                        ] })];
+                            case 13:
+                                _a.sent();
+                                return [3 /*break*/, 15];
+                            case 14:
+                                error_3 = _a.sent();
+                                console.log("ERROR");
+                                return [3 /*break*/, 15];
+                            case 15: return [4 /*yield*/, this.manager.chooseWindow("checker")];
+                            case 16:
                                 _a.sent();
                                 collector.removeAllListeners();
-                                _a.label = 12;
-                            case 12: return [2 /*return*/];
+                                _a.label = 17;
+                            case 17: return [2 /*return*/];
                         }
                     });
                 }); });

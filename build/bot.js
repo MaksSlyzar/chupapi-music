@@ -152,8 +152,8 @@ exports.client.on("messageCreate", function (message) { return __awaiter(void 0,
     });
 }); });
 try {
+    mongoose_1.default.set("strictQuery", false);
     mongoose_1.default.connect(config_1.default.MONGO_URL).then(function (db) {
-        console.log("Successfully connected.");
         (0, db_1.default)();
         exports.client.login(config_1.default.DISCORD_TOKEN);
     });

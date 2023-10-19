@@ -39,7 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 function connection() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            console.log("COnnection");
+            console.log("Successfully connected.");
             return [2 /*return*/];
         });
     });

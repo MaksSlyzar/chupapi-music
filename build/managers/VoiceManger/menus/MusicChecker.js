@@ -96,7 +96,7 @@ var MusicChecker = /** @class */ (function () {
         var channel = this.message.channel;
         var collector = channel.createMessageComponentCollector({});
         collector.on('collect', function (i) { return __awaiter(_this, void 0, void 0, function () {
-            var error_1, error_2;
+            var error_1, error_2, error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -121,8 +121,9 @@ var MusicChecker = /** @class */ (function () {
                         collector.removeAllListeners();
                         _a.label = 6;
                     case 6:
-                        if (!(i.customId == "description")) return [3 /*break*/, 12];
-                        this.manager.tabsRefreshing++;
+                        if (i.customId == "preserve") {
+                        }
+                        if (!(i.customId == "next")) return [3 /*break*/, 11];
                         _a.label = 7;
                     case 7:
                         _a.trys.push([7, 9, , 10]);
@@ -136,12 +137,31 @@ var MusicChecker = /** @class */ (function () {
                         error_2 = _a.sent();
                         console.log("ERROR");
                         return [3 /*break*/, 10];
-                    case 10: return [4 /*yield*/, this.manager.chooseWindow("description")];
+                    case 10:
+                        this.manager.skip();
+                        _a.label = 11;
                     case 11:
+                        if (!(i.customId == "description")) return [3 /*break*/, 17];
+                        this.manager.tabsRefreshing++;
+                        _a.label = 12;
+                    case 12:
+                        _a.trys.push([12, 14, , 15]);
+                        return [4 /*yield*/, i.update({ content: "---", embeds: [
+                                    new discord_js_1.EmbedBuilder().setDescription("wait...")
+                                ] })];
+                    case 13:
+                        _a.sent();
+                        return [3 /*break*/, 15];
+                    case 14:
+                        error_3 = _a.sent();
+                        console.log("ERROR");
+                        return [3 /*break*/, 15];
+                    case 15: return [4 /*yield*/, this.manager.chooseWindow("description")];
+                    case 16:
                         _a.sent();
                         collector.removeAllListeners();
-                        _a.label = 12;
-                    case 12: return [2 /*return*/];
+                        _a.label = 17;
+                    case 17: return [2 /*return*/];
                 }
             });
         }); });

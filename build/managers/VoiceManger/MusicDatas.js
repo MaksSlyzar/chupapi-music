@@ -144,7 +144,6 @@ var MusicDatas = /** @class */ (function () {
                         return [4 /*yield*/, play_dl_1.default.search(input)];
                     case 21:
                         search = _a.sent();
-                        console.log(search);
                         return [4 /*yield*/, play_dl_1.default.video_basic_info(search[0].url)];
                     case 22: return [4 /*yield*/, (_a.sent()).video_details];
                     case 23:
@@ -162,7 +161,7 @@ var MusicDatas = /** @class */ (function () {
                     case 24: return [3 /*break*/, 26];
                     case 25:
                         e_1 = _a.sent();
-                        console.log(e_1);
+                        console.log("Error: catch 98 MusicDatas");
                         return [3 /*break*/, 26];
                     case 26: return [2 /*return*/];
                 }

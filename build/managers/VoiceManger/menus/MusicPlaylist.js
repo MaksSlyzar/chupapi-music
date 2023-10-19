@@ -49,9 +49,6 @@ var MusicPlaylist = /** @class */ (function () {
             var embed, row, maxPages, components, channel, collector;
             var _this = this;
             return __generator(this, function (_a) {
-                // return;
-                console.log("REFRESH");
-                console.log(this.manager.musicDatas.getDiapTracks(this.page * 10, this.page * 10 + 10));
                 embed = new discord_js_1.EmbedBuilder()
                     .setTitle("Turn!")
                     .setDescription("".concat(this.manager.musicDatas.getDiapTracks(this.page * 10, this.page * 10 + 10).map(function (track, index) {
@@ -61,7 +58,6 @@ var MusicPlaylist = /** @class */ (function () {
                 }).join('\n')));
                 row = new ActionRowBuilder();
                 maxPages = Math.floor(this.manager.musicDatas.musicList.length / 10);
-                console.log(maxPages, "Max pages");
                 components = [
                     new ButtonBuilder()
                         .setCustomId('checker')
@@ -91,7 +87,7 @@ var MusicPlaylist = /** @class */ (function () {
                 channel = this.message.channel;
                 collector = channel.createMessageComponentCollector({});
                 collector.on('collect', function (i) { return __awaiter(_this, void 0, void 0, function () {
-                    var error_1, error_2;
+                    var error_1, error_2, error_3;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
@@ -113,11 +109,13 @@ var MusicPlaylist = /** @class */ (function () {
                                 collector.removeAllListeners();
                                 _a.label = 6;
                             case 6:
-                                if (!(i.customId == "description")) return [3 /*break*/, 12];
+                                if (!(i.customId == "next")) return [3 /*break*/, 11];
                                 _a.label = 7;
                             case 7:
                                 _a.trys.push([7, 9, , 10]);
-                                return [4 /*yield*/, i.update({ components: [], content: "---" })];
+                                return [4 /*yield*/, i.update({ content: "---", embeds: [
+                                            new discord_js_1.EmbedBuilder().setDescription("wait...")
+                                        ] })];
                             case 8:
                                 _a.sent();
                                 return [3 /*break*/, 10];
@@ -125,30 +123,46 @@ var MusicPlaylist = /** @class */ (function () {
                                 error_2 = _a.sent();
                                 console.log("ERROR");
                                 return [3 /*break*/, 10];
-                            case 10: return [4 /*yield*/, this.manager.chooseWindow("description")];
+                            case 10:
+                                this.manager.skip();
+                                _a.label = 11;
                             case 11:
-                                _a.sent();
-                                collector.removeAllListeners();
+                                if (!(i.customId == "description")) return [3 /*break*/, 17];
                                 _a.label = 12;
                             case 12:
-                                if (!(i.customId.split("_")[0] == "prevPage")) return [3 /*break*/, 14];
-                                this.page -= 1;
+                                _a.trys.push([12, 14, , 15]);
                                 return [4 /*yield*/, i.update({ components: [], content: "---" })];
                             case 13:
                                 _a.sent();
-                                this.refresh();
-                                collector.removeAllListeners();
-                                _a.label = 14;
+                                return [3 /*break*/, 15];
                             case 14:
-                                if (!(i.customId.split("_")[0] == "nextPage")) return [3 /*break*/, 16];
-                                this.page += 1;
+                                error_3 = _a.sent();
+                                console.log("ERROR");
+                                return [3 /*break*/, 15];
+                            case 15: return [4 /*yield*/, this.manager.chooseWindow("description")];
+                            case 16:
+                                _a.sent();
+                                collector.removeAllListeners();
+                                _a.label = 17;
+                            case 17:
+                                if (!(i.customId.split("_")[0] == "prevPage")) return [3 /*break*/, 19];
+                                this.page -= 1;
                                 return [4 /*yield*/, i.update({ components: [], content: "---" })];
-                            case 15:
+                            case 18:
                                 _a.sent();
                                 this.refresh();
                                 collector.removeAllListeners();
-                                _a.label = 16;
-                            case 16: return [2 /*return*/];
+                                _a.label = 19;
+                            case 19:
+                                if (!(i.customId.split("_")[0] == "nextPage")) return [3 /*break*/, 21];
+                                this.page += 1;
+                                return [4 /*yield*/, i.update({ components: [], content: "---" })];
+                            case 20:
+                                _a.sent();
+                                this.refresh();
+                                collector.removeAllListeners();
+                                _a.label = 21;
+                            case 21: return [2 /*return*/];
                         }
                     });
                 }); });

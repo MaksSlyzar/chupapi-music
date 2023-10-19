@@ -112,13 +112,11 @@ var VoiceManager = /** @class */ (function () {
                             adapterCreator: this.message.guild.voiceAdapterCreator
                         });
                         connection.on("debug", function (debugMessage) {
-                            // console.log("Voice debug: ", debugMessage);
                         });
                         this.audioPlayer = (0, voice_1.createAudioPlayer)();
                         connection.subscribe(this.audioPlayer);
                         this.connection = connection;
                         connection.on("stateChange", function (oldState, newState) {
-                            // console.log("State Change")
                             // if (
                             //     oldState.status === VoiceConnectionStatus.Ready &&
                             //     newState.status === VoiceConnectionStatus.Connecting
@@ -135,7 +133,6 @@ var VoiceManager = /** @class */ (function () {
                             newNetworking === null || newNetworking === void 0 ? void 0 : newNetworking.on('stateChange', networkStateChangeHandler);
                         });
                         this.audioPlayer.on(voice_1.AudioPlayerStatus.Playing, function (state) {
-                            console.log("Playing");
                             _this.hearStartTime = Date.now();
                             _this.state.play = true;
                             _this.startUsersInChannel = [];
@@ -143,11 +140,8 @@ var VoiceManager = /** @class */ (function () {
                                 _this.startUsersInChannel.push(user.id);
                             });
                             _this.addTrackIntoDb();
-                            //remove this pls
-                            // console.log(state)
                         });
                         this.audioPlayer.on(voice_1.AudioPlayerStatus.Idle, function () {
-                            console.log("Idle");
                             // const users: Array<string> = [];
                             // // this.voiceChannel.members.map(user => {
                             // //     if (user.id in this.startUsersInChannel) {
@@ -161,9 +155,9 @@ var VoiceManager = /** @class */ (function () {
                             }
                             _this.state.play = false;
                             _this.musicDatas.index++;
-                            console.log("HEAR TIME!!!", _this.hearTime / 1000);
+                            // console.log("HEAR TIME!!!", this.hearTime / 1000)
                             if (!_this.musicDatas.getTrack()) {
-                                console.log("Return");
+                                // console.log("Return")
                                 _this.work = false;
                                 _this.deleteMessage();
                                 return;
@@ -181,12 +175,10 @@ var VoiceManager = /** @class */ (function () {
                             console.log("Paused");
                         });
                         this.audioPlayer.on(voice_1.AudioPlayerStatus.Buffering, function () {
-                            console.log("Buffering");
                         });
                         this.audioPlayer.on("error", function () {
                             console.log("Error");
                         });
-                        // console.log(this.musicDatas)
                         this.playStream();
                         //
                         // const music = new MusicDto("Ichi ni san pyro", includingUser);
@@ -223,7 +215,6 @@ var VoiceManager = /** @class */ (function () {
         this.musicDatas.musicList = [];
         this.musicDatas.index = 0;
         this.message.delete();
-        // console.log(content)
         // this.textChannel.send(content);
     };
     VoiceManager.prototype.addTrackIntoDb = function () {
@@ -247,7 +238,6 @@ var VoiceManager = /** @class */ (function () {
                         return [4 /*yield*/, sound.save()];
                     case 4:
                         _a.sent();
-                        console.log(user, sound);
                         return [2 /*return*/];
                 }
             });
