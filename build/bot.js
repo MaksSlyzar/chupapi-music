@@ -67,6 +67,12 @@ exports.client.once("ready", function () {
         var guildManager = new GuildManager_1.default(guild);
         guildManagers.push(guildManager);
     });
+    // console.log(client.emojis.cache)
+});
+//Joined a server
+exports.client.on("guildCreate", function (guild) {
+    var guildManager = new GuildManager_1.default(guild);
+    guildManagers.push(guildManager);
 });
 exports.client.on("messageReactionAdd", function (reaction) {
     // console.log(reaction)
@@ -96,7 +102,6 @@ exports.client.on("messageCreate", function (message) { return __awaiter(void 0,
                 }
                 channel = message.channel;
                 guildManager.voiceManager.setTextChannel(channel);
-                console.log(message.author.avatarURL());
                 if (commandName == "play") {
                     content = message.content.split(" ").map(function (val, ind) { return ind == 0 ? "" : val; }).join(" ");
                     guildManager.voiceManager.addTrack(message.author, message.member, content);
@@ -105,6 +110,10 @@ exports.client.on("messageCreate", function (message) { return __awaiter(void 0,
                 if (commandName == "skip") {
                     guildManager.voiceManager.skip();
                     message.delete();
+                }
+                if (commandName == "test") {
+                    console.log(message.content);
+                    channel.send("<:checker:1164575647616737390>");
                 }
                 if (commandName == "gitler") {
                     channel.send({ embeds: [new discord_js_1.EmbedBuilder().setImage("https://cdn.discordapp.com/attachments/590541937900257324/1109043616179036242/2Q.png")] });
@@ -130,17 +139,6 @@ exports.client.on("messageCreate", function (message) { return __awaiter(void 0,
                 channel.send("" + sounds.length);
                 _a.label = 3;
             case 3:
-                if (commandName == "тронилидом") {
-                    channel.send({ embeds: [
-                            new discord_js_1.EmbedBuilder().setTitle(Math.floor(Math.random() * 10) >= 5 ? "Трон" : "Дом").setImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwDj4g0kB65YEJ4pjUIxe2AV3AzwBFc5cx7_xbt4CfTLrKz9I2l1mblvYQK6Yw_VsyKss&usqp=CAU")
-                        ] });
-                }
-                if (commandName == "gay") {
-                    channel.send({ embeds: [new discord_js_1.EmbedBuilder().setImage("https://cdn.discordapp.com/attachments/590541937900257324/1084437913242189914/IMG_20230312_132735.jpg")] });
-                }
-                if (commandName == "pidar") {
-                    channel.send({ embeds: [new discord_js_1.EmbedBuilder().setImage("https://cdn.discordapp.com/attachments/590541937900257324/1088952021991833621/image.png")] });
-                }
                 // if (guildManager == undefined)
                 //     return message.channel.send("This guild is not in my datebase. I am sorry:(");
                 if (guildManager == undefined) {

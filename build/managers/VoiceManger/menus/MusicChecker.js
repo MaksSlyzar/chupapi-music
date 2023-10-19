@@ -42,17 +42,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var discord_js_1 = require("discord.js");
 var wait = require('node:timers/promises').setTimeout;
 var parseSeconds_1 = __importDefault(require("../../../modules/parseSeconds"));
-var _a = require('discord.js'), ActionRowBuilder = _a.ActionRowBuilder, ButtonBuilder = _a.ButtonBuilder, ButtonStyle = _a.ButtonStyle, Events = _a.Events;
+var DescriptionButton_1 = __importDefault(require("./Buttons/DescriptionButton"));
+var TurnButton_1 = __importDefault(require("./Buttons/TurnButton"));
+var PauseButton_1 = __importDefault(require("./Buttons/PauseButton"));
+var NextButton_1 = __importDefault(require("./Buttons/NextButton"));
+var PreserveButton_1 = __importDefault(require("./Buttons/PreserveButton"));
+var emojies_music_json_1 = require("../../../constants/emojies_music.json");
 var MusicChecker = /** @class */ (function () {
     function MusicChecker(voiceManager, message) {
         this.manager = voiceManager;
         this.message = message;
+        this.message.react(emojies_music_json_1.likeEmoji);
+        this.message.react(emojies_music_json_1.dislikeEmoji);
     }
     MusicChecker.prototype.refresh = function (music) {
+        var _a;
         var _this = this;
-        console.log("CHECKER");
-        // console.log(music.includingUser)
-        // return;
         if (!music) {
             var embed_1 = new discord_js_1.EmbedBuilder()
                 .setTitle("Checker")
@@ -75,94 +80,29 @@ var MusicChecker = /** @class */ (function () {
             .setThumbnail(music.imageURL)
             .setFooter({ text: "Included by ".concat(music.includingUser.username),
             iconURL: music.includingUser.avatarURL() });
-        var row = new ActionRowBuilder()
-            .addComponents(new ButtonBuilder()
-            .setCustomId("preserve")
-            .setStyle(ButtonStyle.Secondary)
-            .setEmoji("◀️"), new ButtonBuilder()
-            .setCustomId('pause')
-            .setStyle(ButtonStyle.Secondary)
-            .setEmoji('⏸️'), new ButtonBuilder()
-            .setCustomId('next')
-            .setEmoji('▶️')
-            .setStyle(ButtonStyle.Secondary), new ButtonBuilder()
-            .setCustomId('turn')
-            .setLabel('Turn')
-            .setStyle(ButtonStyle.Secondary), new ButtonBuilder()
-            .setCustomId('description')
-            .setLabel('Description')
-            .setStyle(ButtonStyle.Secondary));
+        var buttons = [
+            new PreserveButton_1.default(this.manager),
+            new PauseButton_1.default(this.manager),
+            new NextButton_1.default(this.manager),
+            new DescriptionButton_1.default(this.manager),
+            new TurnButton_1.default(this.manager),
+        ];
+        var row = (_a = new discord_js_1.ActionRowBuilder())
+            .addComponents.apply(_a, buttons.map(function (button) { return button.buildButton(); }));
         // const filter = i => i.customId === 'primary' && i.user.id === '122157285790187530';
         var channel = this.message.channel;
         var collector = channel.createMessageComponentCollector({});
         collector.on('collect', function (i) { return __awaiter(_this, void 0, void 0, function () {
-            var error_1, error_2, error_3;
+            var selectedCustomId, _i, buttons_1, chupapiButton;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!(i.customId == "turn")) return [3 /*break*/, 6];
-                        this.manager.tabsRefreshing++;
-                        _a.label = 1;
-                    case 1:
-                        _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, i.update({ content: "---", embeds: [
-                                    new discord_js_1.EmbedBuilder().setDescription("wait...")
-                                ] })];
-                    case 2:
-                        _a.sent();
-                        return [3 /*break*/, 4];
-                    case 3:
-                        error_1 = _a.sent();
-                        console.log("ERROR");
-                        return [3 /*break*/, 4];
-                    case 4: return [4 /*yield*/, this.manager.chooseWindow("playlist")];
-                    case 5:
-                        _a.sent();
-                        collector.removeAllListeners();
-                        _a.label = 6;
-                    case 6:
-                        if (i.customId == "preserve") {
-                        }
-                        if (!(i.customId == "next")) return [3 /*break*/, 11];
-                        _a.label = 7;
-                    case 7:
-                        _a.trys.push([7, 9, , 10]);
-                        return [4 /*yield*/, i.update({ content: "---", embeds: [
-                                    new discord_js_1.EmbedBuilder().setDescription("wait...")
-                                ] })];
-                    case 8:
-                        _a.sent();
-                        return [3 /*break*/, 10];
-                    case 9:
-                        error_2 = _a.sent();
-                        console.log("ERROR");
-                        return [3 /*break*/, 10];
-                    case 10:
-                        this.manager.skip();
-                        _a.label = 11;
-                    case 11:
-                        if (!(i.customId == "description")) return [3 /*break*/, 17];
-                        this.manager.tabsRefreshing++;
-                        _a.label = 12;
-                    case 12:
-                        _a.trys.push([12, 14, , 15]);
-                        return [4 /*yield*/, i.update({ content: "---", embeds: [
-                                    new discord_js_1.EmbedBuilder().setDescription("wait...")
-                                ] })];
-                    case 13:
-                        _a.sent();
-                        return [3 /*break*/, 15];
-                    case 14:
-                        error_3 = _a.sent();
-                        console.log("ERROR");
-                        return [3 /*break*/, 15];
-                    case 15: return [4 /*yield*/, this.manager.chooseWindow("description")];
-                    case 16:
-                        _a.sent();
-                        collector.removeAllListeners();
-                        _a.label = 17;
-                    case 17: return [2 /*return*/];
+                selectedCustomId = i.customId;
+                for (_i = 0, buttons_1 = buttons; _i < buttons_1.length; _i++) {
+                    chupapiButton = buttons_1[_i];
+                    if (selectedCustomId == chupapiButton.customId) {
+                        chupapiButton.pressed(i, collector);
+                    }
                 }
+                return [2 /*return*/];
             });
         }); });
         collector.on('end', function (collected) { return console.log("Collected ".concat(collected.size, " items")); });

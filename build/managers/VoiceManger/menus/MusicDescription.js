@@ -35,9 +35,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var builders_1 = require("@discordjs/builders");
 var discord_js_1 = require("discord.js");
+var PauseButton_1 = __importDefault(require("./Buttons/PauseButton"));
+var NextButton_1 = __importDefault(require("./Buttons/NextButton"));
+var TurnButton_1 = __importDefault(require("./Buttons/TurnButton"));
+var CheckerButton_1 = __importDefault(require("./Buttons/CheckerButton"));
+var PreserveButton_1 = __importDefault(require("./Buttons/PreserveButton"));
 function addSpacesToNumber(number) {
     // Перетворюємо число в рядок
     var numStr = number.toString();
@@ -68,97 +76,41 @@ var MusicDescription = /** @class */ (function () {
     }
     MusicDescription.prototype.refresh = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var track, title, description, likes, link, views, embed, row, components, channel, collector;
+            var track, title, description, likes, link, views, embed, buttons, row, channel, collector;
+            var _a;
             var _this = this;
-            return __generator(this, function (_a) {
+            return __generator(this, function (_b) {
                 track = this.manager.musicDatas.getTrack();
                 if (!track)
                     return [2 /*return*/]; // None track
                 title = track.title, description = track.description, likes = track.likes, link = track.link, views = track.views;
                 embed = new builders_1.EmbedBuilder()
                     .setTitle("".concat(title))
-                    .setDescription("Link: ".concat(link, "\n                                                         Likes: **").concat(addSpacesToNumber(likes), "**:thumbsup: \n                                                         Views: **").concat(addSpacesToNumber(views), "**:eyeglasses:\n                                                         Platform: **").concat(track.platform, "**\n                                                         BotListened: \n                                                         Most included: \n                                                         "))
+                    .setDescription("Link: ".concat(link, "\n                                Likes: **").concat(addSpacesToNumber(likes), "**:thumbsup: \n                                Views: **").concat(addSpacesToNumber(views), "**:eyeglasses:\n                                Platform: **").concat(track.platform, "**\n                                BotListened: \n                                Most included: \n                                "))
+                    .setColor(0x0099FF)
                     .setAuthor({ name: track.includingUser.username, iconURL: track.includingUser.avatarURL() });
-                row = new discord_js_1.ActionRowBuilder();
-                components = [
-                    new discord_js_1.ButtonBuilder()
-                        .setCustomId('checker')
-                        .setLabel('Checker')
-                        .setStyle(discord_js_1.ButtonStyle.Secondary),
-                    new discord_js_1.ButtonBuilder()
-                        .setCustomId('turn')
-                        .setLabel('Turn')
-                        .setStyle(discord_js_1.ButtonStyle.Secondary),
+                buttons = [
+                    new PreserveButton_1.default(this.manager),
+                    new PauseButton_1.default(this.manager),
+                    new NextButton_1.default(this.manager),
+                    new TurnButton_1.default(this.manager),
+                    new CheckerButton_1.default(this.manager)
                 ];
-                row.addComponents(components);
+                row = (_a = new discord_js_1.ActionRowBuilder())
+                    .addComponents.apply(_a, buttons.map(function (button) { return button.buildButton(); }));
                 channel = this.message.channel;
                 collector = channel.createMessageComponentCollector({});
                 collector.on('collect', function (i) { return __awaiter(_this, void 0, void 0, function () {
-                    var error_1, error_2, error_3;
+                    var selectedCustomId, _i, buttons_1, chupapiButton;
                     return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                if (!(i.customId == "turn")) return [3 /*break*/, 6];
-                                this.manager.tabsRefreshing++;
-                                _a.label = 1;
-                            case 1:
-                                _a.trys.push([1, 3, , 4]);
-                                return [4 /*yield*/, i.update({ content: "---.", embeds: [
-                                            new builders_1.EmbedBuilder().setDescription("wait...")
-                                        ] })];
-                            case 2:
-                                _a.sent();
-                                return [3 /*break*/, 4];
-                            case 3:
-                                error_1 = _a.sent();
-                                console.log("ERROR");
-                                return [3 /*break*/, 4];
-                            case 4: return [4 /*yield*/, this.manager.chooseWindow("playlist")];
-                            case 5:
-                                _a.sent();
-                                collector.removeAllListeners();
-                                _a.label = 6;
-                            case 6:
-                                if (!(i.customId == "next")) return [3 /*break*/, 11];
-                                _a.label = 7;
-                            case 7:
-                                _a.trys.push([7, 9, , 10]);
-                                return [4 /*yield*/, i.update({ content: "---", embeds: [
-                                            new builders_1.EmbedBuilder().setDescription("wait...")
-                                        ] })];
-                            case 8:
-                                _a.sent();
-                                return [3 /*break*/, 10];
-                            case 9:
-                                error_2 = _a.sent();
-                                console.log("ERROR");
-                                return [3 /*break*/, 10];
-                            case 10:
-                                this.manager.skip();
-                                _a.label = 11;
-                            case 11:
-                                if (!(i.customId == "checker")) return [3 /*break*/, 17];
-                                this.manager.tabsRefreshing++;
-                                _a.label = 12;
-                            case 12:
-                                _a.trys.push([12, 14, , 15]);
-                                return [4 /*yield*/, i.update({ content: "---", embeds: [
-                                            new builders_1.EmbedBuilder().setDescription("wait...")
-                                        ] })];
-                            case 13:
-                                _a.sent();
-                                return [3 /*break*/, 15];
-                            case 14:
-                                error_3 = _a.sent();
-                                console.log("ERROR");
-                                return [3 /*break*/, 15];
-                            case 15: return [4 /*yield*/, this.manager.chooseWindow("checker")];
-                            case 16:
-                                _a.sent();
-                                collector.removeAllListeners();
-                                _a.label = 17;
-                            case 17: return [2 /*return*/];
+                        selectedCustomId = i.customId;
+                        for (_i = 0, buttons_1 = buttons; _i < buttons_1.length; _i++) {
+                            chupapiButton = buttons_1[_i];
+                            if (selectedCustomId == chupapiButton.customId) {
+                                chupapiButton.pressed(i, collector);
+                            }
                         }
+                        return [2 /*return*/];
                     });
                 }); });
                 collector.on('end', function (collected) { return console.log("Collected ".concat(collected.size, " items")); });

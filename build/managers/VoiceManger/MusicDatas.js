@@ -178,6 +178,7 @@ var MusicDatas = /** @class */ (function () {
                 return tracks;
             else
                 tracks.push(this.musicList[i]);
+        // console.log(tracks);
         return tracks;
     };
     return MusicDatas;

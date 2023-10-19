@@ -35,9 +35,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var discord_js_1 = require("discord.js");
 var _a = require('discord.js'), ActionRowBuilder = _a.ActionRowBuilder, ButtonBuilder = _a.ButtonBuilder, ButtonStyle = _a.ButtonStyle, Events = _a.Events;
+var CheckerButton_1 = __importDefault(require("./Buttons/CheckerButton"));
+var DescriptionButton_1 = __importDefault(require("./Buttons/DescriptionButton"));
+var emojies_music_json_1 = require("../../../constants/emojies_music.json");
 var MusicPlaylist = /** @class */ (function () {
     function MusicPlaylist(manager, message) {
         this.manager = manager;
@@ -46,28 +52,24 @@ var MusicPlaylist = /** @class */ (function () {
     }
     MusicPlaylist.prototype.refresh = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var embed, row, maxPages, components, channel, collector;
+            var embed, row, maxPages, buttons, components, channel, collector;
             var _this = this;
             return __generator(this, function (_a) {
                 embed = new discord_js_1.EmbedBuilder()
-                    .setTitle("Turn!")
+                    .setTitle("Turn")
                     .setDescription("".concat(this.manager.musicDatas.getDiapTracks(this.page * 10, this.page * 10 + 10).map(function (track, index) {
-                    return "".concat(index === _this.manager.musicDatas.index ?
-                        _this.manager.state.play ? "▶️" : "⏸️"
-                        : "", "\" ").concat(track.title, "\" added by **").concat(track.includingUser.username, "**\n");
-                }).join('\n')));
+                    return "".concat(index + _this.page * 10 === _this.manager.musicDatas.index ?
+                        _this.manager.paused ? emojies_music_json_1.pauseEmoji : emojies_music_json_1.checkerEmoji
+                        : "", "\"  ").concat(track.title, "\" added by **").concat(track.includingUser.username, "**\n");
+                }).join('\n')))
+                    .setColor(0x0099FF);
                 row = new ActionRowBuilder();
                 maxPages = Math.floor(this.manager.musicDatas.musicList.length / 10);
-                components = [
-                    new ButtonBuilder()
-                        .setCustomId('checker')
-                        .setLabel('Checker')
-                        .setStyle(ButtonStyle.Secondary),
-                    new ButtonBuilder()
-                        .setCustomId('description')
-                        .setLabel('Description')
-                        .setStyle(ButtonStyle.Secondary),
+                buttons = [
+                    new CheckerButton_1.default(this.manager),
+                    new DescriptionButton_1.default(this.manager)
                 ];
+                components = [];
                 if (this.page != 0)
                     components.push(new ButtonBuilder()
                         .setCustomId('prevPage')
@@ -83,86 +85,40 @@ var MusicPlaylist = /** @class */ (function () {
                         .setCustomId('nextPage')
                         .setLabel("".concat(this.page + 2))
                         .setStyle(ButtonStyle.Secondary));
+                components.push.apply(components, buttons.map(function (button) { return button.buildButton(); }));
                 row.addComponents(components);
                 channel = this.message.channel;
                 collector = channel.createMessageComponentCollector({});
                 collector.on('collect', function (i) { return __awaiter(_this, void 0, void 0, function () {
-                    var error_1, error_2, error_3;
+                    var selectedCustomId, _i, buttons_1, chupapiButton;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
-                                if (!(i.customId == "checker")) return [3 /*break*/, 6];
-                                _a.label = 1;
-                            case 1:
-                                _a.trys.push([1, 3, , 4]);
-                                return [4 /*yield*/, i.update({ components: [], content: "---" })];
-                            case 2:
-                                _a.sent();
-                                return [3 /*break*/, 4];
-                            case 3:
-                                error_1 = _a.sent();
-                                console.log("ERROR");
-                                return [3 /*break*/, 4];
-                            case 4: return [4 /*yield*/, this.manager.chooseWindow("checker")];
-                            case 5:
-                                _a.sent();
-                                collector.removeAllListeners();
-                                _a.label = 6;
-                            case 6:
-                                if (!(i.customId == "next")) return [3 /*break*/, 11];
-                                _a.label = 7;
-                            case 7:
-                                _a.trys.push([7, 9, , 10]);
-                                return [4 /*yield*/, i.update({ content: "---", embeds: [
-                                            new discord_js_1.EmbedBuilder().setDescription("wait...")
-                                        ] })];
-                            case 8:
-                                _a.sent();
-                                return [3 /*break*/, 10];
-                            case 9:
-                                error_2 = _a.sent();
-                                console.log("ERROR");
-                                return [3 /*break*/, 10];
-                            case 10:
-                                this.manager.skip();
-                                _a.label = 11;
-                            case 11:
-                                if (!(i.customId == "description")) return [3 /*break*/, 17];
-                                _a.label = 12;
-                            case 12:
-                                _a.trys.push([12, 14, , 15]);
-                                return [4 /*yield*/, i.update({ components: [], content: "---" })];
-                            case 13:
-                                _a.sent();
-                                return [3 /*break*/, 15];
-                            case 14:
-                                error_3 = _a.sent();
-                                console.log("ERROR");
-                                return [3 /*break*/, 15];
-                            case 15: return [4 /*yield*/, this.manager.chooseWindow("description")];
-                            case 16:
-                                _a.sent();
-                                collector.removeAllListeners();
-                                _a.label = 17;
-                            case 17:
-                                if (!(i.customId.split("_")[0] == "prevPage")) return [3 /*break*/, 19];
+                                selectedCustomId = i.customId;
+                                for (_i = 0, buttons_1 = buttons; _i < buttons_1.length; _i++) {
+                                    chupapiButton = buttons_1[_i];
+                                    if (selectedCustomId == chupapiButton.customId) {
+                                        chupapiButton.pressed(i, collector);
+                                    }
+                                }
+                                if (!(i.customId.split("_")[0] == "prevPage")) return [3 /*break*/, 2];
                                 this.page -= 1;
                                 return [4 /*yield*/, i.update({ components: [], content: "---" })];
-                            case 18:
+                            case 1:
                                 _a.sent();
                                 this.refresh();
                                 collector.removeAllListeners();
-                                _a.label = 19;
-                            case 19:
-                                if (!(i.customId.split("_")[0] == "nextPage")) return [3 /*break*/, 21];
+                                _a.label = 2;
+                            case 2:
+                                if (!(i.customId.split("_")[0] == "nextPage")) return [3 /*break*/, 4];
                                 this.page += 1;
                                 return [4 /*yield*/, i.update({ components: [], content: "---" })];
-                            case 20:
+                            case 3:
                                 _a.sent();
                                 this.refresh();
                                 collector.removeAllListeners();
-                                _a.label = 21;
-                            case 21: return [2 /*return*/];
+                                _a.label = 4;
+                            case 4: return [2 /*return*/];
                         }
                     });
                 }); });

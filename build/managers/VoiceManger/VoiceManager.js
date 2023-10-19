@@ -52,6 +52,8 @@ var VoiceManager = /** @class */ (function () {
         this.tabsRefreshing = 0;
         this.hearTime = 0;
         this.hearStartTime = 0;
+        this.canPause = Date.now();
+        this.paused = false;
         this.guild = guild;
         this.work = false;
         this.musicDatas = new MusicDatas_1.default();
@@ -133,6 +135,7 @@ var VoiceManager = /** @class */ (function () {
                             newNetworking === null || newNetworking === void 0 ? void 0 : newNetworking.on('stateChange', networkStateChangeHandler);
                         });
                         this.audioPlayer.on(voice_1.AudioPlayerStatus.Playing, function (state) {
+                            _this.paused = false;
                             _this.hearStartTime = Date.now();
                             _this.state.play = true;
                             _this.startUsersInChannel = [];
@@ -173,6 +176,8 @@ var VoiceManager = /** @class */ (function () {
                         });
                         this.audioPlayer.on(voice_1.AudioPlayerStatus.Paused, function () {
                             console.log("Paused");
+                            _this.paused = true;
+                            _this.state.play = false;
                         });
                         this.audioPlayer.on(voice_1.AudioPlayerStatus.Buffering, function () {
                         });
@@ -283,6 +288,15 @@ var VoiceManager = /** @class */ (function () {
     VoiceManager.prototype.pause = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
+                if ((Date.now() - this.canPause) / 1000 > 2) {
+                    this.canPause = Date.now();
+                    try {
+                        console.log("PAUSE");
+                        this.audioPlayer.pause();
+                    }
+                    catch (_b) {
+                    }
+                }
                 return [2 /*return*/];
             });
         });
@@ -290,6 +304,15 @@ var VoiceManager = /** @class */ (function () {
     VoiceManager.prototype.unpause = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
+                if ((Date.now() - this.canPause) / 1000 > 2) {
+                    this.canPause = Date.now();
+                    try {
+                        console.log("UNPAUSE");
+                        this.audioPlayer.unpause();
+                    }
+                    catch (_b) {
+                    }
+                }
                 return [2 /*return*/];
             });
         });
