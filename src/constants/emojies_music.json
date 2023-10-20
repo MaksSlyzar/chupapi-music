@@ -6,5 +6,11 @@
     "preserveEmoji": "<:preserve:1164581038186569792>",
     "pauseEmoji": "<:pause:1164581578761044009>",
     "likeEmoji": "<:like:1164621415757123706>",
-    "dislikeEmoji": "<:dislike:1164621291601526845>"
+    "dislikeEmoji": "<:dislike:1164621291601526845>",
+    "progressLeftEmoji": "<:progress_left:1164691413095690260>",
+    "progressCenterEmoji": "<:progress_center:1164643245666619465>",
+    "progressRightEmoji": "<:progress_right:1164643230504210503>",
+    "progressCenterEmptyEmoji": "<:progress_center_empty:1164690251130880051>",
+    "progressRightBlackEmoji": "<:progress_right_black:1164690196210651266>",
+    "progressRightEmpty": "<:progress_right_empty:1164690302263635968>"
 }

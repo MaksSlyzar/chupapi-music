@@ -1,4 +1,19 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -39,13 +54,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var builders_1 = require("@discordjs/builders");
 var discord_js_1 = require("discord.js");
+var discord_js_2 = require("discord.js");
 var PauseButton_1 = __importDefault(require("./Buttons/PauseButton"));
 var NextButton_1 = __importDefault(require("./Buttons/NextButton"));
 var TurnButton_1 = __importDefault(require("./Buttons/TurnButton"));
 var CheckerButton_1 = __importDefault(require("./Buttons/CheckerButton"));
 var PreserveButton_1 = __importDefault(require("./Buttons/PreserveButton"));
+var ChupapiMenu_1 = __importDefault(require("./ChupapiMenu"));
 function addSpacesToNumber(number) {
     // Перетворюємо число в рядок
     var numStr = number.toString();
@@ -69,14 +85,18 @@ function addSpacesToNumber(number) {
     var result = parts.join(" ");
     return result;
 }
-var MusicDescription = /** @class */ (function () {
+var MusicDescription = /** @class */ (function (_super) {
+    __extends(MusicDescription, _super);
     function MusicDescription(manager, message) {
-        this.manager = manager;
-        this.message = message;
+        var _this = _super.call(this) || this;
+        _this.updateProgressSound = true;
+        _this.manager = manager;
+        _this.message = message;
+        return _this;
     }
     MusicDescription.prototype.refresh = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var track, title, description, likes, link, views, embed, buttons, row, channel, collector;
+            var track, title, description, likes, link, views, buttons, row, channel, collector;
             var _a;
             var _this = this;
             return __generator(this, function (_b) {
@@ -84,11 +104,12 @@ var MusicDescription = /** @class */ (function () {
                 if (!track)
                     return [2 /*return*/]; // None track
                 title = track.title, description = track.description, likes = track.likes, link = track.link, views = track.views;
-                embed = new builders_1.EmbedBuilder()
+                this.embed = new discord_js_1.EmbedBuilder()
                     .setTitle("".concat(title))
-                    .setDescription("Link: ".concat(link, "\n                                Likes: **").concat(addSpacesToNumber(likes), "**:thumbsup: \n                                Views: **").concat(addSpacesToNumber(views), "**:eyeglasses:\n                                Platform: **").concat(track.platform, "**\n                                BotListened: \n                                Most included: \n                                "))
+                    .setDescription("Link: ".concat(link, "\n                                Likes: **").concat(addSpacesToNumber(likes), "**:thumbsup: \n                                Views: **").concat(addSpacesToNumber(views), "**:eyeglasses:\n                                Platform: **").concat(track.platform, "**\n                                BotListened: \n                                Most included: \n\n                                ").concat(this.manager.progress.getProgress(), "\n                                "))
                     .setColor(0x0099FF)
                     .setAuthor({ name: track.includingUser.username, iconURL: track.includingUser.avatarURL() });
+                this.manager.nowWindow = "description";
                 buttons = [
                     new PreserveButton_1.default(this.manager),
                     new PauseButton_1.default(this.manager),
@@ -96,7 +117,7 @@ var MusicDescription = /** @class */ (function () {
                     new TurnButton_1.default(this.manager),
                     new CheckerButton_1.default(this.manager)
                 ];
-                row = (_a = new discord_js_1.ActionRowBuilder())
+                row = (_a = new discord_js_2.ActionRowBuilder())
                     .addComponents.apply(_a, buttons.map(function (button) { return button.buildButton(); }));
                 channel = this.message.channel;
                 collector = channel.createMessageComponentCollector({});
@@ -114,11 +135,13 @@ var MusicDescription = /** @class */ (function () {
                     });
                 }); });
                 collector.on('end', function (collected) { return console.log("Collected ".concat(collected.size, " items")); });
-                this.message.edit({ embeds: [embed], components: [row] });
+                this.message.edit({ embeds: [this.embed], components: [row] }).then(function () {
+                    // this.manager.progress.update();
+                });
                 return [2 /*return*/];
             });
         });
     };
     return MusicDescription;
-}());
+}(ChupapiMenu_1.default));
 exports.default = MusicDescription;

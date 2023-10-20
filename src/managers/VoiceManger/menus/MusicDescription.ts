@@ -1,5 +1,5 @@
-import { EmbedBuilder } from "@discordjs/builders";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Message, TextChannel } from "discord.js";
+import { EmbedBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Embed, Message, TextChannel } from "discord.js";
 import VoiceManager from "../VoiceManager";
 import PauseButton from "./Buttons/PauseButton";
 import NextButton from "./Buttons/NextButton";
@@ -7,6 +7,7 @@ import DescriptionButton from "./Buttons/DescriptionButton";
 import TurnButton from "./Buttons/TurnButton";
 import CheckerButton from "./Buttons/CheckerButton";
 import PreserveButton from "./Buttons/PreserveButton";
+import ChupapiMenu from "./ChupapiMenu";
 
 
 function addSpacesToNumber(number: number): string {
@@ -38,11 +39,13 @@ function addSpacesToNumber(number: number): string {
     return result;
 }
 
-class MusicDescription {
+class MusicDescription extends ChupapiMenu {
     manager: VoiceManager;
     message: Message;
+    updateProgressSound = true;
 
     constructor (manager: VoiceManager, message: Message) {
+        super();
         this.manager = manager;
         this.message = message;
     }
@@ -55,7 +58,7 @@ class MusicDescription {
         
         const { title, description, likes, link, views } = track;
 
-        const embed = new EmbedBuilder()
+        this.embed = new EmbedBuilder()
             .setTitle(`${title}`)
             .setDescription(`Link: ${link}
                                 Likes: **${addSpacesToNumber(likes)}**:thumbsup: 
@@ -63,11 +66,13 @@ class MusicDescription {
                                 Platform: **${track.platform}**
                                 BotListened: 
                                 Most included: 
+
+                                ${this.manager.progress.getProgress()}
                                 `)
             .setColor(0x0099FF)
             .setAuthor({ name: track.includingUser.username, iconURL: track.includingUser.avatarURL() })
 
-
+            this.manager.nowWindow = "description";
 
             const buttons = [
                 new PreserveButton(this.manager),
@@ -100,8 +105,10 @@ class MusicDescription {
             });
         
         collector.on('end', collected => console.log(`Collected ${collected.size} items`));
-            
-        this.message.edit({ embeds: [embed], components: [row] });
+        
+        this.message.edit({ embeds: [this.embed], components: [row] }).then(() => {
+            // this.manager.progress.update();
+        });
     }
 }
 

@@ -6,13 +6,17 @@ import DescriptionButton from "./Buttons/DescriptionButton";
 
 
 import { pauseEmoji, checkerEmoji } from "../../../constants/emojies_music.json";
+import { ChupapiButton } from "./Buttons/ChupapiButton";
+import ChupapiMenu from "./ChupapiMenu";
 
-class MusicPlaylist {
+class MusicPlaylist extends ChupapiMenu {
     manager: VoiceManager;
     message: Message;
     page: number;
+    updateProgressSound = true;
 
     constructor (manager: VoiceManager, message: Message) {
+        super();
         this.manager = manager;
         this.message = message;
         this.page = 0;
@@ -24,19 +28,22 @@ class MusicPlaylist {
 
         // console.log(this.manager.musicDatas.getDiapTracks(this.page * 10, this.page * 10 + 10));
         // return;
-        const embed = new EmbedBuilder()
-                                        .setTitle("Turn")
-                                        .setDescription(`${this.manager.musicDatas.getDiapTracks(this.page * 10, this.page * 10 + 10).map((track, index) => {
-                                            return `${index + this.page * 10 === this.manager.musicDatas.index? 
-                                                this.manager.paused?pauseEmoji:checkerEmoji
-                                            : ""}"  ${track.title}" added by **${track.includingUser.username}**\n`
-                                        }).join('\n')}`)
-                                        .setColor(0x0099FF);
+        this.embed = new EmbedBuilder()
+                .setTitle("Turn")
+                .setDescription(`${this.manager.musicDatas.getDiapTracks(this.page * 6, this.page * 6 + 6).map((track, index) => {
+                    return `${index + this.page * 6 === this.manager.musicDatas.index? 
+                        this.manager.paused?pauseEmoji:checkerEmoji
+                    : ""}"  ${track.title}" added by **${track.includingUser.username}**
+                    `
+                }).join('\n')}\n${this.manager.progress.getProgress()}`)
+                .setColor(0x0099FF);
+
+        this.manager.nowWindow = "playlist";
 
 
         const row = new ActionRowBuilder();
 
-        const maxPages = Math.floor(this.manager.musicDatas.musicList.length / 10);
+        const maxPages = Math.floor(this.manager.musicDatas.musicList.length / 6);
         // console.log(maxPages, "Max pages");
 
         const buttons = [
@@ -103,9 +110,10 @@ class MusicPlaylist {
         });
         
         collector.on('end', collected => console.log(`Collected ${collected.size} items`));
-            
-
-        this.message.edit({ embeds: [embed], components: [row] });
+    
+        this.message.edit({ embeds: [this.embed], components: [row] }).then(() => {
+            // this.manager.progress.update();
+        });
     }
 }
 

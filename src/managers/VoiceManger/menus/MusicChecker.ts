@@ -11,12 +11,16 @@ import NextButton from "./Buttons/NextButton";
 import PreserveButton from "./Buttons/PreserveButton";
 
 import { likeEmoji, dislikeEmoji} from "../../../constants/emojies_music.json";
+import Progress from "./Progress/ProgressSound";
+import ChupapiMenu from "./ChupapiMenu";
 
-class MusicChecker {
+class MusicChecker extends ChupapiMenu {
     message: Message;
     manager: VoiceManager;
+    updateProgressSound = true;
 
     constructor (voiceManager: VoiceManager, message: Message) {
+        super();
         this.manager = voiceManager;
         this.message = message;
 
@@ -44,18 +48,22 @@ class MusicChecker {
         }
 
         
-        const embed = new EmbedBuilder()
+        this.embed = new EmbedBuilder()
                                         .setTitle(music.title)
                                         .setURL(music.link)
                                         .setColor(0x0099FF)
                                         .setDescription(`
                                                         Time **${parseSeconds(music.time)}**
                                                         Owner **${music.owner}**
-                                                        ${nextTrack?`Next track **${nextTrack.title}** time ${parseSeconds(nextTrack.time)}`:''}`)
+                                                        ${nextTrack?`Next track **${nextTrack.title}** time ${parseSeconds(nextTrack.time)}`:''}
+                                                        ${this.manager.progress.getProgress()}`)
                                         .setThumbnail(music.imageURL)
                                         .setFooter({ text: `Included by ${music.includingUser.username}`,
                                                      iconURL: music.includingUser.avatarURL() });
 
+        
+        this.manager.nowWindow = "checker";
+        
 
         const buttons = [
             new PreserveButton(this.manager),
@@ -88,9 +96,11 @@ class MusicChecker {
         });
         
         collector.on('end', collected => console.log(`Collected ${collected.size} items`));
-            
 
-        this.message.edit({ embeds: [embed], components: [row] });
+        this.message.edit({ embeds: [this.embed], components: [row] }).then(() => {
+            // this.manager.newUpdateProgress = true;
+            // this.manager.progress.update();
+        });
     }
 }
 

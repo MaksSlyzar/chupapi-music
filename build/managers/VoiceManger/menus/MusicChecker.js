@@ -1,4 +1,19 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -48,21 +63,26 @@ var PauseButton_1 = __importDefault(require("./Buttons/PauseButton"));
 var NextButton_1 = __importDefault(require("./Buttons/NextButton"));
 var PreserveButton_1 = __importDefault(require("./Buttons/PreserveButton"));
 var emojies_music_json_1 = require("../../../constants/emojies_music.json");
-var MusicChecker = /** @class */ (function () {
+var ChupapiMenu_1 = __importDefault(require("./ChupapiMenu"));
+var MusicChecker = /** @class */ (function (_super) {
+    __extends(MusicChecker, _super);
     function MusicChecker(voiceManager, message) {
-        this.manager = voiceManager;
-        this.message = message;
-        this.message.react(emojies_music_json_1.likeEmoji);
-        this.message.react(emojies_music_json_1.dislikeEmoji);
+        var _this = _super.call(this) || this;
+        _this.updateProgressSound = true;
+        _this.manager = voiceManager;
+        _this.message = message;
+        _this.message.react(emojies_music_json_1.likeEmoji);
+        _this.message.react(emojies_music_json_1.dislikeEmoji);
+        return _this;
     }
     MusicChecker.prototype.refresh = function (music) {
         var _a;
         var _this = this;
         if (!music) {
-            var embed_1 = new discord_js_1.EmbedBuilder()
+            var embed = new discord_js_1.EmbedBuilder()
                 .setTitle("Checker")
                 .setDescription("Can't find the sound");
-            return this.message.edit({ embeds: [embed_1] });
+            return this.message.edit({ embeds: [embed] });
         }
         // console.log(music)
         var nextTrack;
@@ -72,14 +92,15 @@ var MusicChecker = /** @class */ (function () {
         else {
             nextTrack = null;
         }
-        var embed = new discord_js_1.EmbedBuilder()
+        this.embed = new discord_js_1.EmbedBuilder()
             .setTitle(music.title)
             .setURL(music.link)
             .setColor(0x0099FF)
-            .setDescription("\n                                                        Time **".concat((0, parseSeconds_1.default)(music.time), "**\n                                                        Owner **").concat(music.owner, "**\n                                                        ").concat(nextTrack ? "Next track **".concat(nextTrack.title, "** time ").concat((0, parseSeconds_1.default)(nextTrack.time)) : ''))
+            .setDescription("\n                                                        Time **".concat((0, parseSeconds_1.default)(music.time), "**\n                                                        Owner **").concat(music.owner, "**\n                                                        ").concat(nextTrack ? "Next track **".concat(nextTrack.title, "** time ").concat((0, parseSeconds_1.default)(nextTrack.time)) : '', "\n                                                        ").concat(this.manager.progress.getProgress()))
             .setThumbnail(music.imageURL)
             .setFooter({ text: "Included by ".concat(music.includingUser.username),
             iconURL: music.includingUser.avatarURL() });
+        this.manager.nowWindow = "checker";
         var buttons = [
             new PreserveButton_1.default(this.manager),
             new PauseButton_1.default(this.manager),
@@ -106,8 +127,11 @@ var MusicChecker = /** @class */ (function () {
             });
         }); });
         collector.on('end', function (collected) { return console.log("Collected ".concat(collected.size, " items")); });
-        this.message.edit({ embeds: [embed], components: [row] });
+        this.message.edit({ embeds: [this.embed], components: [row] }).then(function () {
+            // this.manager.newUpdateProgress = true;
+            // this.manager.progress.update();
+        });
     };
     return MusicChecker;
-}());
+}(ChupapiMenu_1.default));
 exports.default = MusicChecker;

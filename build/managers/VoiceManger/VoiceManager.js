@@ -47,6 +47,7 @@ var MusicPlaylist_1 = __importDefault(require("./menus/MusicPlaylist"));
 var MusicDatas_1 = __importDefault(require("./MusicDatas"));
 var UserSchema_1 = __importDefault(require("../../schemas/UserSchema"));
 var SoundSchema_1 = __importDefault(require("../../schemas/SoundSchema"));
+var ProgressSound_1 = __importDefault(require("./menus/Progress/ProgressSound"));
 var VoiceManager = /** @class */ (function () {
     function VoiceManager(guild) {
         this.tabsRefreshing = 0;
@@ -54,40 +55,59 @@ var VoiceManager = /** @class */ (function () {
         this.hearStartTime = 0;
         this.canPause = Date.now();
         this.paused = false;
+        this.musicPlayableTime = 0;
+        this.updateProgressSound = false;
+        this.latestWindow = "";
+        this.newUpdateProgress = false;
         this.guild = guild;
         this.work = false;
         this.musicDatas = new MusicDatas_1.default();
+        this.progress = new ProgressSound_1.default(this);
         this.state = {
             play: false
         };
+        this.timer();
     }
     VoiceManager.prototype.chooseWindow = function (window) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        this.nowWindow = window;
-                        if (!(this.nowWindow == "checker")) return [3 /*break*/, 2];
+                        if (!(window == "checker")) return [3 /*break*/, 2];
                         return [4 /*yield*/, this.musicChecker.refresh(this.musicDatas.getTrack())];
                     case 1:
                         _a.sent();
+                        this.updateProgressSound = this.musicChecker.updateProgressSound;
                         _a.label = 2;
                     case 2:
-                        if (!(this.nowWindow == "playlist")) return [3 /*break*/, 4];
+                        if (!(window == "playlist")) return [3 /*break*/, 4];
                         return [4 /*yield*/, this.musicPlaylist.refresh()];
                     case 3:
                         _a.sent();
+                        this.updateProgressSound = this.musicPlaylist.updateProgressSound;
                         _a.label = 4;
                     case 4:
-                        if (!(this.nowWindow == "description")) return [3 /*break*/, 6];
+                        if (!(window == "description")) return [3 /*break*/, 6];
                         return [4 /*yield*/, this.musicDescription.refresh()];
                     case 5:
                         _a.sent();
+                        this.updateProgressSound = this.musicDescription.updateProgressSound;
                         _a.label = 6;
                     case 6: return [2 /*return*/];
                 }
             });
         });
+    };
+    VoiceManager.prototype.getWindow = function () {
+        if (this.nowWindow == "checker") {
+            return this.musicChecker;
+        }
+        if (this.nowWindow == "playlist") {
+            return this.musicPlaylist;
+        }
+        if (this.nowWindow == "description") {
+            return this.musicDescription;
+        }
     };
     VoiceManager.prototype.addTrack = function (includingUser, member, trackStr) {
         return __awaiter(this, void 0, void 0, function () {
@@ -157,6 +177,7 @@ var VoiceManager = /** @class */ (function () {
                                 // this.addTrackIntoDb();
                             }
                             _this.state.play = false;
+                            _this.musicPlayableTime = 0;
                             _this.musicDatas.index++;
                             // console.log("HEAR TIME!!!", this.hearTime / 1000)
                             if (!_this.musicDatas.getTrack()) {
@@ -165,10 +186,14 @@ var VoiceManager = /** @class */ (function () {
                                 _this.deleteMessage();
                                 return;
                             }
-                            if (_this.nowWindow == "checker")
+                            if (_this.nowWindow == "checker") {
                                 _this.musicChecker.refresh(_this.musicDatas.getTrack());
-                            if (_this.nowWindow == "playlist")
+                                _this.updateProgressSound = _this.musicChecker.updateProgressSound;
+                            }
+                            if (_this.nowWindow == "playlist") {
                                 _this.musicPlaylist.refresh();
+                                _this.updateProgressSound = _this.musicPlaylist.updateProgressSound;
+                            }
                             _this.playStream();
                         });
                         this.audioPlayer.on(voice_1.AudioPlayerStatus.AutoPaused, function (state) {
@@ -195,10 +220,12 @@ var VoiceManager = /** @class */ (function () {
                         _c.apply(_b, [_d.sent()]);
                         return [2 /*return*/];
                     case 4:
-                        if (this.nowWindow == "checker")
+                        if (this.nowWindow == "checker") {
                             this.musicChecker.refresh(this.musicDatas.getTrack());
-                        if (this.nowWindow == "playlist")
+                        }
+                        if (this.nowWindow == "playlist") {
                             this.musicPlaylist.refresh();
+                        }
                         return [2 /*return*/];
                 }
             });
@@ -323,6 +350,22 @@ var VoiceManager = /** @class */ (function () {
                 return [2 /*return*/];
             });
         });
+    };
+    VoiceManager.prototype.timer = function () {
+        var _this = this;
+        if (this.state.play == true && this.paused == false) {
+            this.musicPlayableTime++;
+            var musicTimeStep = Math.floor(this.musicDatas.getTrack().time / 10);
+            var window_1 = this.getWindow();
+            if (this.musicPlayableTime % musicTimeStep == 0 || this.musicPlayableTime == 1) {
+                this.progress.update();
+            }
+            if (this.newUpdateProgress) {
+                this.progress.update();
+                this.newUpdateProgress = !this.newUpdateProgress;
+            }
+        }
+        setTimeout(function () { return _this.timer(); }, 1000);
     };
     VoiceManager.prototype.skip = function () {
         return __awaiter(this, void 0, void 0, function () {

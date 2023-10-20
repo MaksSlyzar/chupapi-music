@@ -1,4 +1,19 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -44,27 +59,37 @@ var _a = require('discord.js'), ActionRowBuilder = _a.ActionRowBuilder, ButtonBu
 var CheckerButton_1 = __importDefault(require("./Buttons/CheckerButton"));
 var DescriptionButton_1 = __importDefault(require("./Buttons/DescriptionButton"));
 var emojies_music_json_1 = require("../../../constants/emojies_music.json");
-var MusicPlaylist = /** @class */ (function () {
+var ChupapiMenu_1 = __importDefault(require("./ChupapiMenu"));
+var MusicPlaylist = /** @class */ (function (_super) {
+    __extends(MusicPlaylist, _super);
     function MusicPlaylist(manager, message) {
-        this.manager = manager;
-        this.message = message;
-        this.page = 0;
+        var _this = _super.call(this) || this;
+        _this.updateProgressSound = true;
+        _this.manager = manager;
+        _this.message = message;
+        _this.page = 0;
+        return _this;
     }
     MusicPlaylist.prototype.refresh = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var embed, row, maxPages, buttons, components, channel, collector;
+            var row, maxPages, buttons, components, channel, collector;
             var _this = this;
             return __generator(this, function (_a) {
-                embed = new discord_js_1.EmbedBuilder()
+                // return;
+                // console.log("REFRESH")
+                // console.log(this.manager.musicDatas.getDiapTracks(this.page * 10, this.page * 10 + 10));
+                // return;
+                this.embed = new discord_js_1.EmbedBuilder()
                     .setTitle("Turn")
-                    .setDescription("".concat(this.manager.musicDatas.getDiapTracks(this.page * 10, this.page * 10 + 10).map(function (track, index) {
-                    return "".concat(index + _this.page * 10 === _this.manager.musicDatas.index ?
+                    .setDescription("".concat(this.manager.musicDatas.getDiapTracks(this.page * 6, this.page * 6 + 6).map(function (track, index) {
+                    return "".concat(index + _this.page * 6 === _this.manager.musicDatas.index ?
                         _this.manager.paused ? emojies_music_json_1.pauseEmoji : emojies_music_json_1.checkerEmoji
-                        : "", "\"  ").concat(track.title, "\" added by **").concat(track.includingUser.username, "**\n");
-                }).join('\n')))
+                        : "", "\"  ").concat(track.title, "\" added by **").concat(track.includingUser.username, "**\n                    ");
+                }).join('\n'), "\n").concat(this.manager.progress.getProgress()))
                     .setColor(0x0099FF);
+                this.manager.nowWindow = "playlist";
                 row = new ActionRowBuilder();
-                maxPages = Math.floor(this.manager.musicDatas.musicList.length / 10);
+                maxPages = Math.floor(this.manager.musicDatas.musicList.length / 6);
                 buttons = [
                     new CheckerButton_1.default(this.manager),
                     new DescriptionButton_1.default(this.manager)
@@ -123,11 +148,13 @@ var MusicPlaylist = /** @class */ (function () {
                     });
                 }); });
                 collector.on('end', function (collected) { return console.log("Collected ".concat(collected.size, " items")); });
-                this.message.edit({ embeds: [embed], components: [row] });
+                this.message.edit({ embeds: [this.embed], components: [row] }).then(function () {
+                    // this.manager.progress.update();
+                });
                 return [2 /*return*/];
             });
         });
     };
     return MusicPlaylist;
-}());
+}(ChupapiMenu_1.default));
 exports.default = MusicPlaylist;

@@ -1,5 +1,5 @@
 import { joinVoiceChannel, AudioPlayer, createAudioPlayer, AudioPlayerStatus, createAudioResource, NoSubscriberBehavior, AudioPlayerState, VoiceConnectionStatus } from "@discordjs/voice";
-import { Channel, Guild, GuildMember, Message, TextChannel, User, VoiceChannel } from "discord.js";
+import { Channel, Embed, EmbedBuilder, Guild, GuildMember, Message, TextChannel, User, VoiceChannel } from "discord.js";
 import playdl from "play-dl";
 import { Connection } from "mongoose";
 import MusicDto from "../../dtos/MusicDto";
@@ -9,6 +9,8 @@ import MusicPlaylist from "./menus/MusicPlaylist";
 import MusicDatas from "./MusicDatas";
 import UserSchema from "../../schemas/UserSchema";
 import SoundSchema from "../../schemas/SoundSchema";
+import Progress from "./menus/Progress/ProgressSound";
+import ProgressSound from "./menus/Progress/ProgressSound";
 
 class VoiceManager {
     guild: Guild;
@@ -34,26 +36,51 @@ class VoiceManager {
 
     startUsersInChannel: Array<string>;
 
+    progress: Progress;
+    musicPlayableTime: number = 0;
+    
+    menuEmbedContent: EmbedBuilder;
+    updateProgressSound: boolean = false;
+    latestWindow: string = "";
+    newUpdateProgress: boolean = false;
 
     constructor (guild: Guild) {
         this.guild = guild;
         this.work = false;
         this.musicDatas = new MusicDatas();
+        this.progress = new ProgressSound(this);
 
         this.state = {
             play: false
-        }
+        };
+        this.timer();
     }
 
     async chooseWindow (window: "checker"|"playlist"|"description") {
-        this.nowWindow = window;
-
-        if (this.nowWindow == "checker")
+        if (window == "checker") {
             await this.musicChecker.refresh(this.musicDatas.getTrack());
-        if (this.nowWindow == "playlist")
+            this.updateProgressSound = this.musicChecker.updateProgressSound;
+        }
+        if (window == "playlist") {
             await this.musicPlaylist.refresh();
-        if (this.nowWindow == "description")
+            this.updateProgressSound = this.musicPlaylist.updateProgressSound;
+        }
+        if (window == "description") {
             await this.musicDescription.refresh();
+            this.updateProgressSound = this.musicDescription.updateProgressSound;
+        }
+    }
+
+    getWindow () {
+        if (this.nowWindow == "checker") {
+            return this.musicChecker;
+        }
+        if (this.nowWindow == "playlist") {
+            return this.musicPlaylist;
+        }
+        if (this.nowWindow == "description") {
+            return this.musicDescription;
+        }
     }
 
     async addTrack (includingUser: User, member: GuildMember, trackStr: string) {
@@ -132,6 +159,7 @@ class VoiceManager {
                 }
                 
                 this.state.play = false;
+                this.musicPlayableTime = 0;
                 this.musicDatas.index++;
                 
                 // console.log("HEAR TIME!!!", this.hearTime / 1000)
@@ -142,10 +170,15 @@ class VoiceManager {
                     return;
                 }
 
-                if (this.nowWindow == "checker")
+                if (this.nowWindow == "checker") {
                     this.musicChecker.refresh(this.musicDatas.getTrack());
-                if (this.nowWindow == "playlist")
+                    this.updateProgressSound = this.musicChecker.updateProgressSound;
+                }
+                if (this.nowWindow == "playlist") {
                     this.musicPlaylist.refresh(); 
+                    this.updateProgressSound = this.musicPlaylist.updateProgressSound;
+                }
+
                 this.playStream();
 			});
 
@@ -179,10 +212,13 @@ class VoiceManager {
             return;
         }
 
-        if (this.nowWindow == "checker")
+        if (this.nowWindow == "checker") {
             this.musicChecker.refresh(this.musicDatas.getTrack());
-        if (this.nowWindow == "playlist")
+        }
+
+        if (this.nowWindow == "playlist") {
             this.musicPlaylist.refresh();
+        }
         // await this.musicDatas.addTrack("DK я тут");
     }
 
@@ -280,7 +316,27 @@ class VoiceManager {
     }
 
     async next () {
-    
+
+    }
+
+    timer () {
+        if (this.state.play == true && this.paused == false) {
+            this.musicPlayableTime++;
+
+            const musicTimeStep = Math.floor(this.musicDatas.getTrack().time / 10);
+            const window = this.getWindow();
+
+            if (this.musicPlayableTime % musicTimeStep == 0 || this.musicPlayableTime == 1) {
+                this.progress.update();
+            }
+
+            if (this.newUpdateProgress) {
+                this.progress.update();
+                this.newUpdateProgress = !this.newUpdateProgress;
+            }
+        }
+
+        setTimeout(() => this.timer(), 1000);
     }
 
     async skip () {
