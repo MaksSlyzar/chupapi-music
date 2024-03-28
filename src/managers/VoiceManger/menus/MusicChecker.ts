@@ -57,7 +57,8 @@ class MusicChecker extends ChupapiMenu {
                                                         Owner **${music.owner}**
                                                         ${nextTrack?`Next track **${nextTrack.title}** time ${parseSeconds(nextTrack.time)}`:''}
                                                         ${this.manager.progress.getProgress()}`)
-                                        .setThumbnail(music.imageURL)
+                                        // .setThumbnail(music.imageURL)
+                                        .setThumbnail("https://pract.zanpy.repl.co/wowk.gif")
                                         .setFooter({ text: `Included by ${music.includingUser.username}`,
                                                      iconURL: music.includingUser.avatarURL() });
 

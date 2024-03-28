@@ -124,6 +124,9 @@ exports.client.on("messageCreate", function (message) { return __awaiter(void 0,
                 if (commandName.toLowerCase() == "nani") {
                     channel.send({ embeds: [new discord_js_1.EmbedBuilder().setImage("https://cdn.discordapp.com/attachments/786023455337218079/1110164982374617139/petya.png")] });
                 }
+                if (commandName == "help") {
+                    channel.send({ embeds: [new discord_js_1.EmbedBuilder().setDescription("Понятно, подсос не знає команд бота.\n:play <youtube_link/key_words>\n:skip #skip music")] });
+                }
                 if (commandName == "unpause")
                     guildManager.voiceManager.audioPlayer.unpause();
                 if (!(commandName == "sounds")) return [3 /*break*/, 3];

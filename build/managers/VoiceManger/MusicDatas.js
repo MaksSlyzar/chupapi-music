@@ -162,8 +162,8 @@ var MusicDatas = /** @class */ (function () {
                     case 25:
                         e_1 = _a.sent();
                         console.log("Error: catch 98 MusicDatas");
-                        return [3 /*break*/, 26];
-                    case 26: return [2 /*return*/];
+                        return [2 /*return*/, false];
+                    case 26: return [2 /*return*/, true];
                 }
             });
         });

@@ -7,9 +7,6 @@ import connection from "./db";
 import UserSchema from "./schemas/UserSchema";
 import SoundSchema from "./schemas/SoundSchema";
 
-
-
-
 export const client = new Client({ intents: ["Guilds", 
                                             "GuildMessages", 
                                             "DirectMessages", 
@@ -106,6 +103,10 @@ client.on("messageCreate", async (message: Message) => {
         channel.send({ embeds: [new EmbedBuilder().setImage("https://cdn.discordapp.com/attachments/786023455337218079/1110164982374617139/petya.png")] })
     }
 
+    if (commandName == "help") {
+        channel.send({ embeds: [new EmbedBuilder().setDescription("Понятно, подсос не знає команд бота.\n:play <youtube_link/key_words>\n:skip #skip music")] })
+    }
+
     if (commandName == "unpause")
         guildManager.voiceManager.audioPlayer.unpause();
 
@@ -120,6 +121,8 @@ client.on("messageCreate", async (message: Message) => {
         console.log(sounds);
         channel.send("" + sounds.length);
     }
+
+
         
     // if (guildManager == undefined)
     //     return message.channel.send("This guild is not in my datebase. I am sorry:(");

@@ -13,6 +13,6 @@ app.get('/p', function (req, res) {
     res.send('Express + TypeScript Server');
     console.log("d");
 });
-app.listen(port, function () {
-    console.log("\u26A1\uFE0F[server]: Server is running at http://localhost:".concat(port));
-});
+// app.listen(port, () => {
+//   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+// });

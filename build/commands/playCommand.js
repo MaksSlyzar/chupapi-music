@@ -50,30 +50,46 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var discord_js_1 = require("discord.js");
-var ChupapiButton_1 = require("./ChupapiButton");
-var emojies_music_json_1 = require("../../../../constants/emojies_music.json");
-var NextButton = /** @class */ (function (_super) {
-    __extends(NextButton, _super);
-    function NextButton(voiceManager) {
-        var _this = _super.call(this, voiceManager) || this;
-        _this.customId = "id-next";
+var Command_1 = __importDefault(require("../modules/Command"));
+var PlayCommand = /** @class */ (function (_super) {
+    __extends(PlayCommand, _super);
+    function PlayCommand() {
+        var _this = _super.call(this) || this;
+        var data = new discord_js_1.SlashCommandBuilder()
+            .setName("play")
+            .setDescription("Грати музику, так як грають твого батька")
+            .addStringOption(function (option) {
+            return option.setName("find-source")
+                .setDescription("Лінк, або назва відоса");
+        });
+        _this.data = data;
         return _this;
     }
-    NextButton.prototype.buildButton = function () {
-        return new discord_js_1.ButtonBuilder()
-            .setCustomId(this.customId)
-            .setEmoji(emojies_music_json_1.nextEmoji)
-            .setStyle(discord_js_1.ButtonStyle.Secondary);
-    };
-    NextButton.prototype.pressed = function (i, collector) {
+    PlayCommand.prototype.execute = function (interaction, guildManager) {
         return __awaiter(this, void 0, void 0, function () {
+            var value, member;
             return __generator(this, function (_a) {
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0:
+                        if (!interaction.isCommand())
+                            return [2 /*return*/];
+                        value = interaction.options.get("find-source").value.toString();
+                        return [4 /*yield*/, guildManager.guild.members.fetch({ user: interaction.user })];
+                    case 1:
+                        member = _a.sent();
+                        console.log(member);
+                        guildManager.voiceManager.addTrack(interaction.user, member, value);
+                        interaction.followUp;
+                        return [2 /*return*/];
+                }
             });
         });
     };
-    return NextButton;
-}(ChupapiButton_1.ChupapiButton));
-exports.default = NextButton;
+    return PlayCommand;
+}(Command_1.default));
+exports.default = PlayCommand;

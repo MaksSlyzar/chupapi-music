@@ -117,6 +117,10 @@ class VoiceManager {
                 //     connection.configureNetworking();
                 // }
 
+                if (newState.status == "disconnected") {
+                    // this.textChannel.send("Ясно, адмін тупоголовий хуєсос.");
+                }
+
                 const oldNetworking = Reflect.get(oldState, 'networking');
                 const newNetworking = Reflect.get(newState, 'networking');
 

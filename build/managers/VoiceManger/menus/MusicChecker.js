@@ -97,7 +97,8 @@ var MusicChecker = /** @class */ (function (_super) {
             .setURL(music.link)
             .setColor(0x0099FF)
             .setDescription("\n                                                        Time **".concat((0, parseSeconds_1.default)(music.time), "**\n                                                        Owner **").concat(music.owner, "**\n                                                        ").concat(nextTrack ? "Next track **".concat(nextTrack.title, "** time ").concat((0, parseSeconds_1.default)(nextTrack.time)) : '', "\n                                                        ").concat(this.manager.progress.getProgress()))
-            .setThumbnail(music.imageURL)
+            // .setThumbnail(music.imageURL)
+            .setThumbnail("https://pract.zanpy.repl.co/wowk.gif")
             .setFooter({ text: "Included by ".concat(music.includingUser.username),
             iconURL: music.includingUser.avatarURL() });
         this.manager.nowWindow = "checker";

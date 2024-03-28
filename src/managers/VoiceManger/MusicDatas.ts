@@ -96,8 +96,10 @@ class MusicDatas {
 
         } catch(e) {
             console.log("Error: catch 98 MusicDatas");
-            
+            return false;
         }
+
+        return true;
     }
 
     getTrack () {

@@ -1,19 +1,4 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -51,29 +36,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var discord_js_1 = require("discord.js");
-var ChupapiButton_1 = require("./ChupapiButton");
-var emojies_music_json_1 = require("../../../../constants/emojies_music.json");
-var NextButton = /** @class */ (function (_super) {
-    __extends(NextButton, _super);
-    function NextButton(voiceManager) {
-        var _this = _super.call(this, voiceManager) || this;
-        _this.customId = "id-next";
-        return _this;
+var Command = /** @class */ (function () {
+    function Command() {
     }
-    NextButton.prototype.buildButton = function () {
-        return new discord_js_1.ButtonBuilder()
-            .setCustomId(this.customId)
-            .setEmoji(emojies_music_json_1.nextEmoji)
-            .setStyle(discord_js_1.ButtonStyle.Secondary);
-    };
-    NextButton.prototype.pressed = function (i, collector) {
+    Command.prototype.execute = function (interaction, guildManager) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
+                if (!interaction.isCommand())
+                    return [2 /*return*/];
                 return [2 /*return*/];
             });
         });
     };
-    return NextButton;
-}(ChupapiButton_1.ChupapiButton));
-exports.default = NextButton;
+    return Command;
+}());
+exports.default = Command;

@@ -145,6 +145,9 @@ var VoiceManager = /** @class */ (function () {
                             // ) {
                             //     connection.configureNetworking();
                             // }
+                            if (newState.status == "disconnected") {
+                                // this.textChannel.send("Ясно, адмін тупоголовий хуєсос.");
+                            }
                             var oldNetworking = Reflect.get(oldState, 'networking');
                             var newNetworking = Reflect.get(newState, 'networking');
                             var networkStateChangeHandler = function (oldNetworkState, newNetworkState) {

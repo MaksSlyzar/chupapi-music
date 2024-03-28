@@ -81,15 +81,15 @@ var MusicPlaylist = /** @class */ (function (_super) {
                 // return;
                 this.embed = new discord_js_1.EmbedBuilder()
                     .setTitle("Turn")
-                    .setDescription("".concat(this.manager.musicDatas.getDiapTracks(this.page * 6, this.page * 6 + 6).map(function (track, index) {
-                    return "".concat(index + _this.page * 6 === _this.manager.musicDatas.index ?
+                    .setDescription("".concat(this.manager.musicDatas.getDiapTracks(this.page * 10, this.page * 10 + 10).map(function (track, index) {
+                    return "".concat(index + _this.page * 10 === _this.manager.musicDatas.index ?
                         _this.manager.paused ? emojies_music_json_1.pauseEmoji : emojies_music_json_1.checkerEmoji
                         : "", "\"  ").concat(track.title, "\" added by **").concat(track.includingUser.username, "**\n                    ");
                 }).join('\n'), "\n").concat(this.manager.progress.getProgress()))
                     .setColor(0x0099FF);
                 this.manager.nowWindow = "playlist";
                 row = new ActionRowBuilder();
-                maxPages = Math.floor(this.manager.musicDatas.musicList.length / 6);
+                maxPages = Math.floor(this.manager.musicDatas.musicList.length / 10);
                 buttons = [
                     new CheckerButton_1.default(this.manager),
                     new DescriptionButton_1.default(this.manager)

@@ -14,6 +14,6 @@ app.get('/p', (req: Request, res: Response) => {
   console.log("d")
 });
 
-app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+// });

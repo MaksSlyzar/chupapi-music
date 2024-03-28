@@ -30,8 +30,8 @@ class MusicPlaylist extends ChupapiMenu {
         // return;
         this.embed = new EmbedBuilder()
                 .setTitle("Turn")
-                .setDescription(`${this.manager.musicDatas.getDiapTracks(this.page * 6, this.page * 6 + 6).map((track, index) => {
-                    return `${index + this.page * 6 === this.manager.musicDatas.index? 
+                .setDescription(`${this.manager.musicDatas.getDiapTracks(this.page * 10, this.page * 10 + 10).map((track, index) => {
+                    return `${index + this.page * 10 === this.manager.musicDatas.index? 
                         this.manager.paused?pauseEmoji:checkerEmoji
                     : ""}"  ${track.title}" added by **${track.includingUser.username}**
                     `
@@ -43,7 +43,7 @@ class MusicPlaylist extends ChupapiMenu {
 
         const row = new ActionRowBuilder();
 
-        const maxPages = Math.floor(this.manager.musicDatas.musicList.length / 6);
+        const maxPages = Math.floor(this.manager.musicDatas.musicList.length / 10);
         // console.log(maxPages, "Max pages");
 
         const buttons = [

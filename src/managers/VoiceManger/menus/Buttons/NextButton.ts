@@ -20,15 +20,15 @@ class NextButton extends ChupapiButton {
     }
 
     async pressed(i: InteractionType, collector: IntractionCollectorType){
-        try {
-            await i.update({ content: `---`, embeds: [
-                new EmbedBuilder().setDescription("wait...")
-            ] });
-        } catch (error) {
-            console.log("ERROR")
-        }
+        // try {
+        //     await i.update({ content: `---`, embeds: [
+        //         new EmbedBuilder().setDescription("wait...")
+        //     ] });
+        // } catch (error) {
+        //     console.log("ERROR")
+        // }
 
-        this.voiceManager.skip();
+        // this.voiceManager.skip();
     }
 }
 
